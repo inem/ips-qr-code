@@ -1,0 +1,43 @@
+#!/usr/bin/env ruby
+
+require 'optparse'
+require 'ips_qr_code'
+
+options = {}
+parser = OptionParser.new do |opts|
+  opts.banner = "Usage: ips-qr-code [options]"
+
+  opts.on("--kod K", "Kod (PR, PT, PK, EK)") { |v| options[:k] = v }
+  opts.on("--verzija V", "Verzija (01)") { |v| options[:v] = v }
+  opts.on("--kodni-raspored C", "Kod raspored (1)") { |v| options[:c] = v }
+  opts.on("--racun-primaoca R", "Broj racuna primaoca") { |v| options[:r] = v }
+  opts.on("--naziv-primaoca N", "Naziv primaoca") { |v| options[:n] = v }
+  opts.on("--racun-platioca O", "Broj racuna platioca") { |v| options[:o] = v }
+  opts.on("--naziv-platioca P", "Naziv platioca") { |v| options[:p] = v }
+  opts.on("--sifra-placanja SF", "Sifra placanja") { |v| options[:sf] = v }
+  opts.on("--iznos I", "Iznos (e.g. RSD1000,00)") { |v| options[:i] = v }
+  opts.on("--svrha-placanja S", "Svrha placanja") { |v| options[:s] = v }
+  opts.on("--merchant-code-category M", "Merchant code category") { |v| options[:m] = v }
+  opts.on("--jednokratna-sifra J", "Jednokratna sifra") { |v| options[:js] = v }
+  opts.on("--poziv-na-broj RO", "Poziv na broj") { |v| options[:ro] = v }
+  opts.on("--referenca-primaoca RL", "Referenca primaoca") { |v| options[:rl] = v }
+  opts.on("--referenca-placanja RP", "Referenca placanja") { |v| options[:rp] = v }
+
+  opts.on("-h", "--help", "Prints this help") do
+    puts opts
+    exit
+  end
+end
+
+begin
+  parser.parse!
+  result = IpsQrCode.generate(options)
+  puts result
+rescue OptionParser::InvalidOption => e
+  warn e.message
+  puts parser
+  exit 1
+rescue ArgumentError => e
+  warn "Error: #{e.message}"
+  exit 1
+end
