@@ -2,8 +2,10 @@
 
 require 'optparse'
 require 'ips_qr_code'
+require 'rqrcode'
 
 options = {}
+to_file = nil
 parser = OptionParser.new do |opts|
   opts.banner = "Usage: ips-qr-code [options]"
 
@@ -22,6 +24,7 @@ parser = OptionParser.new do |opts|
   opts.on("--poziv-na-broj RO", "Poziv na broj") { |v| options[:ro] = v }
   opts.on("--referenca-primaoca RL", "Referenca primaoca") { |v| options[:rl] = v }
   opts.on("--referenca-placanja RP", "Referenca placanja") { |v| options[:rp] = v }
+  opts.on("--to-file FILE", "Save QR code to image file") { |v| to_file = v }
 
   opts.on("-h", "--help", "Prints this help") do
     puts opts
@@ -32,7 +35,48 @@ end
 begin
   parser.parse!
   result = IpsQrCode.generate(options)
-  puts result
+
+  if to_file
+    begin
+      qrcode = RQRCode::QRCode.new(result)
+
+      case File.extname(to_file).downcase
+      when '.png'
+        png = qrcode.as_png(
+          bit_depth: 1,
+          border_modules: 4,
+          color_mode: ChunkyPNG::COLOR_GRAYSCALE,
+          color: 'black',
+          file: nil,
+          fill: 'white',
+          module_px_size: 6,
+          resize_exactly_to: false,
+          resize_gte_to: false,
+          size: 300
+        )
+        IO.binwrite(to_file, png.to_s)
+        puts "QR code saved to #{to_file}"
+      when '.svg'
+        svg = qrcode.as_svg(
+          offset: 0,
+          color: '000',
+          shape_rendering: 'crispEdges',
+          module_size: 6,
+          standalone: true
+        )
+        File.write(to_file, svg)
+        puts "QR code saved to #{to_file}"
+      else
+        puts "Unsupported file format. Use .png or .svg"
+      end
+    rescue => e
+      warn "Error generating QR code: #{e.message}"
+      exit 1
+    end
+  else
+    puts result
+  end
+
 rescue OptionParser::InvalidOption => e
   warn e.message
   puts parser

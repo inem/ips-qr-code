@@ -17,4 +17,6 @@ Gem::Specification.new do |spec|
 
   spec.executables   = ['ips-qr-code']
   spec.require_paths = ['lib']
+
+  spec.add_dependency 'rqrcode', '~> 2.0'
 end
