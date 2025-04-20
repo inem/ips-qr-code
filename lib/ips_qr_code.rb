@@ -33,7 +33,7 @@ module IpsQrCode
       raise ArgumentError, 'nazivPrimaoca must be between 1 and 70 characters'
     end
     unless n.match?(/^[a-zA-ZšđžčćŠĐŽČĆ0-9 \(\)\{\}\[\]<>\/\.,:;!@#\$%\^&\?„""""'`''_~=+\-\s]+$/u)
-      raise ArgumentError, 'nazivPrimaoca contains invalid characters'
+      raise ArgumentError, 'Only letters, numbers, and select special characers are allowed.'
     end
     if n.lines.count > 3
       raise ArgumentError, 'nazivPrimaoca must not contain more than 3 lines'
