@@ -12,3 +12,7 @@ install:
 .PHONY: build
 build:
 	gem build ips_qr_code.gemspec
+
+.PHONY: publish
+publish:
+	gem push ips_qr_code-*.gem
